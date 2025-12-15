@@ -4,6 +4,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
+// server
+const Server = {
+  port: parseInt(process.env.SERVER_PORT || '3000', 10),
+  clientURL: process.env.CLIENT_URL || 'http://localhost:3000',
+};
+
+
 // mongodb config
 const Uri = process.env.MONGODB_URI ! as string;
 
@@ -23,4 +30,5 @@ export default {
   Uri,
   Pagination,
   JWT,
+  Server,
 };

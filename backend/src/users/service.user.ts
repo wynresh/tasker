@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schema.user';
+import config from '@/config';
 
 @Injectable()
-export class UserService {
+export default class UserService {
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
     ) {}
@@ -18,8 +19,12 @@ export class UserService {
         return this.userModel.findById(id).exec();
     }
 
-    find(query: any): Promise<UserDocument[]> {
-        return this.userModel.find(query).exec();
+    find(query: any, limit: string | number, page: string | number = 1): Promise<UserDocument[]> {
+        return this.userModel
+            .find(query)
+            .limit(Number(limit || config.Pagination.limit))
+            .skip((Number(page) - 1) * Number(limit))
+            .exec();
     }
 
     update(id: string, updateData: Partial<User>): Promise<UserDocument | null> {

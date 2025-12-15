@@ -1,7 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
 import mongoose, { Document } from 'mongoose';
-import pagination from 'mongoose-paginate-v2';
 import * as bcrypt from 'bcryptjs';
 
 export interface UserDocument extends Document {
@@ -69,37 +67,7 @@ UserSchema.pre<UserDocument>('save', async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Static method to find user by email, username, or id
-UserSchema.statics.findUser = async function (
-    identifier: string
-): Promise<UserDocument | null> {
-    return this.findOne({
-        $or: [
-            { email: identifier },
-            { username: identifier },
-            { _id: identifier }
-        ],
-    } as any);
-};
+// indexes
+UserSchema.index({ email: 1 });
+UserSchema.index({ username: 1 });
 
-// Static method to find admin by email, username, or id
-UserSchema.statics.findAdmin = async function (
-    identifier: string
-): Promise<UserDocument | null> {
-    return this.findOne({
-        $and: [
-            { role: 'admin' },
-            {
-                $or: [
-                    { email: identifier },
-                    { username: identifier },
-                    { _id: identifier }
-                ],
-            },
-        ],
-    } as any);
-};
-
-
-// Apply pagination plugin
-UserSchema.plugin(pagination);
