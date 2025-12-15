@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@nestjs/microservices": "^11.1.9",
+    "@nestjs/mongoose": "^11.0.4",
     "amqplib": "^0.10.9",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",

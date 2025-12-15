@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
-// server config
+// mongodb config
 const Uri = process.env.MONGODB_URI ! as string;
 
 // Pagination Config

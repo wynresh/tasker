@@ -2,7 +2,7 @@ import jsonwebtoken from 'jsonwebtoken';
 import config from '@/config';
 
 
-const generateToken = (
+export const generateToken = (
     payload: object, 
     expiresIn: any ): string => {
   return jsonwebtoken.sign(
