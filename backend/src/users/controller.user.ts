@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Req, Query } from '@nestjs/common';
 import UserService from './service.user';
 import { User, UserDocument } from './schema.user';
 
@@ -208,10 +208,10 @@ export default class UserController {
         try {
             const userId = req.user.id;
             if (userId !== id && req.user.role !== 'admin') {
-                return this.userService.get(userId);
+                return await this.userService.get(userId);
             }
 
-            return this.userService.get(id);
+            return await this.userService.get(id);
         } catch (err) {
             return { message: err instanceof Error ? err.message : 'An error occurred' }
        }
@@ -222,13 +222,13 @@ export default class UserController {
         try {
             const userId = req.user.id;
             if (userId !== id && req.user.role !== 'admin') {
-                return this.userService.delete(userId);
+                return await this.userService.delete(userId);
             }
         
-            return this.userService.delete(id);
+            return await this.userService.delete(id);
         } catch (err) {
             return { message: err instanceof Error ? err.message : 'An error occurred' }
-       }
+        }
     }
 
     @Put(':id')
@@ -240,37 +240,36 @@ export default class UserController {
         try {
             const userId = req.user.id;
             if (userId !== id && req.user.role !== 'admin') {
-                return this.userService.update(userId, updateData);
+                return await this.userService.update(userId, updateData);
             }
         
-            return this.userService.update(id, updateData);
+            return await this.userService.update(id, updateData);
         } catch (err) {
             return { message: err instanceof Error ? err.message : 'An error occurred' }
-       }
+        }
     }
 
     @Get()
-    async find(@Req() query: any): Promise<User[] | { message: string}> {
+    async find(@Query() query: any): Promise<User[] | { message: string}> {
         try {
-            const q = { ...query }
-            const limit = q.limit || null
-            if (limit) delete q[limit];
 
-            const page = q.page || 1
-            if (page) delete q[page];
+            const { limit, page, ...filters } = query;
 
-            return this.userService.find(query, limit, page);
+            const take = limit ? Number(limit) : 10;
+            const currentPage = page ? Number(page) : 1;
+
+            return await this.userService.find(filters, take, currentPage);
         } catch (err) {
             return { message: err instanceof Error ? err.message : 'An error occurred' }
-       }
+        }
     }
 
     @Get('count')
-    async count(@Body() query: any): Promise<number | { message: string}> {
+    async count(@Query() query: any): Promise<number | { message: string}> {
         try {
-            return this.userService.count(query);
+            return await this.userService.count(query);
         } catch (err) {
             return { message: err instanceof Error ? err.message : 'An error occurred' }
-       }
+        }
     }
 }
